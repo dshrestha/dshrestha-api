@@ -24,7 +24,7 @@ app.use(session({secret: 'keyboard cat', resave: false, saveUninitialized: true}
 
 app.use(cors(function (req, callback) {
     var corsOptions;
-    var whitelist = ['http://localhost:4200', 'https://dshrestha.herokuapp.com/home'];
+    var whitelist = ['http://localhost:4200', 'https://dshrestha.herokuapp.com'];
     if (whitelist.indexOf(req.header('Origin')) !== -1) {
         corsOptions = {origin: true}; // reflect (enable) the requested origin in the CORS response
     } else {
