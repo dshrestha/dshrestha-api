@@ -38,6 +38,7 @@ app.use(cors(function (req, callback) {
 app.use('/', require('./routes/index'));
 app.use('/captcha', require('./routes/captcha'));
 app.use('/mailer', require('./routes/mailer'));
+app.use('/api/blog', require('./routes/api/blog'));
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

@@ -14,7 +14,7 @@ router.get('/', function (req, res, next) {
 router.get('/verify', function (req, res, next) {
     var text = req.query.text;
     var validCaptcha = (text === req.session.captcha);
-    console.log(`text: ${text} and value in the session is ${req.session.captcha}`);
+    
     req.session.captcha = null;
     res.setHeader('Content-Type', 'application/json');
     if (validCaptcha) {
