@@ -208,6 +208,8 @@ modules.forEach(function (module) {
 
 export default resolver;
 </pre>
+
+<p>The only catch with this resolver is that your components are now namespaced ie. in your template you will invoke component by appending the module name eg: {{employees.list-employee-payroll}}</p>
 `
 }];
 
