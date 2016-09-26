@@ -5,7 +5,6 @@ var blogPost = require('./../../models/blog-post');
 
 router.get('/categories', function (req, res, next) {
     var data = {"data": []};
-
     blogCategory.find((v=>true)).forEach((category)=> {
         data.data.push(blogCategory.normalize(category));
     });

@@ -1,6 +1,6 @@
 var blogPosts = [{
     "id": 1,
-    "title": "Customizing ember-resolver to support folder structure that makes most sense to you.",
+    "title": "Extending ember-resolver to customize codebase structure the way you want.",
     "createdOn": "2016-09-20T04:03:56.571Z",
     "categoryId": 1,
     "abstract": `
@@ -13,101 +13,55 @@ favor the older approach of having all controllers, routes etc in their respecti
  `,
     "content": `
     
-<p>Developers who like to code clean also like to organize their project files in logical order. Organizing your source code files
-in proper structure makes it much more easier to segregate resources that are associated with specific domain/module and adds
-to the overall cleanliness and manageability. Ember is no stranger to this ideology, with the advent of ember cli, ember provides rally neat folder structure. 
-If you were to create a new project now, you will be given app/controllers/, app/models/ etc more about what those folder are for can be 
-found <a href="https://ember-cli.com/user-guide/#layout-within-app-directory" target="_blank">here</a>.
-So all is good so far, you are working in a project and you know exactly where your controller, routes, adapters etc should go.
-Slowly requirements are being added and you will end up adding files to each of those folders. Before you know it
-there are more than 50 files in each of those folders and you are scrolling through them to find a file you want to work on.
-This can be pretty frustrating experience, made even worse when you have to switch between controller, components, templates, and routes associated with 
-a feature you are building.</p>
-    
-Then came  <a href="http://cball.me/organize-your-ember-app-with-pods/">POD</a> which took a jab at solving this issue: 
+<p>I have been developing ember app for quite some time now and as we have progressed towards newer version of ember, it was 
+also natural for us to move on from custom build scripts to ember-cli. Before cli, our code base was very module centric 
+and that made it easier to isolate resources used in one module from another by placing them in module specific folder. After
+ember-cli, we lost the module structure since we had to put all the controllers, models, routes etc in their specific folder.
+Since we had big codebase with about 30+ resources/routes and even more components/views to support them, things got bit
+rough because we couldn't easily tell which model/component was used in which module. </p>
 
-<ul>
-    <li>the component.js and template.hbs files associated with component goes in their own separate folder -- YAYYYY</li>
-    <li>the route.js, controller.js, template.hbs, service.js file associated with a route goes in their own separate folder -- BIG YAYYYY</li>
-    <li>but if we create model whose name doesn't match with route name, you end up with a folder with model name with model.js file within it
-     and same holds true when you create service so time to fall back to the classical approach -- BOOO</li>
-</ul>   
-    
-    
-<p>In most of large scale projects you will almost always find concept of modules forming around the top most parent routes. A simple example of such
-segregation can be seen materializing in the given route structure:</p>
-    
-<pre>
-Router.map(function () {
-  //employees section is separate module
-  this.route('employees', function(){
-    this.route('employee-detail');
-    this.route('service-details');
-    this.route('documents');
-  });
-  
-  //training is separate module
-  this.route('training', function(){
-    this.route('technical', function(){
-        ....
-    });
-    this.route('non-technical', function(){
-        ....
-    });    
-  });
-});
-</pre>    
+<p>Few months later as we discovered <a href="http://cball.me/organize-your-ember-app-with-pods/" target="_blank">POD structure</a>, I was super
+excited about it because now we could move away from using "resource" and use nested "route" instead, and the nested folder
+structure to follow just made sense. It also partially solved for our module structure that we were accustomed to before
+because we could use the parent route as module itself. Things were looking good, but POD didn't solve for our 
+burning wish to move all other resources(specially components) associated with the route/module within it.
+And now all thanks to our <a href="https://twitter.com/@rwjblue" target="_blank">Robert Jackson</a> and his <a href="https://github.com/ember-cli/ember-resolver" target="_blank">ember resolver</a>
+ addon we are so much more close to how we wanted to structure our code base. I must say Robert has been an invaluable gift to the
+  ember community, I have lost count of the times I have stumbled upon his posts that saved me from all the frustration.</p>  
 
-<p>So naturally it would make sense to have all the resources associated with a module to be placed within it. An example for such a structure would look like:
-</p>
+<p>Ember resolver is as name suggests, responsible for resolving a resource, so simply put, if you ask the resolver to give us a "blog" model, 
+it figures out possible locations where the source file could be and returns it if found in one of those locations or will tell
+you sorry m8 I couldn't find it. So this is skeleton of the structure that I want my codebase to look like :
 
+   
 <pre>
 
     app
-     |-modules
-         |-employees
+     |-modules//pod prefix
+         |-MODULE-NAME-1
              |-models
-                  |-employee.js
-                  |-tax.js
-                  |-service-history.js
-             |-adapters
+                  |-model-1
+                      |-model.js
+                      |-adapter.js
+                      |-serializer.js
              |-components
-                  |-list-employee-payroll
-                            |-component.js
-                            |-template.js
-             |-serializers
+                  |-component-1
+                      |-component.js
+                      |-template.js
              |-routes
-                 |-taxes
+                 |-route-1
                      |-route.js
                      |-template.hbs
                  |-route.js
                  |-template.hbs
-         |-training
-             |-models
-                  |-training.js
-                  |-training-category.js
-             |-adapters
-             |-serializers
-             |-routes
-                 |-technical
-                     |-route.js
-                     |-template.hbs
-                 |-non-technical
-                     |-route.js
-                     |-template.hbs
-                 |-route.js
-                 |-template.hbs   
-                               
+         |-MODULE-NAME-2(so on and so forth)
+                                  
 </pre>
 
-
-<p>Now finally back to the <a href="https://github.com/ember-cli/ember-resolver" target="_blank">ember resolver</a> which will help us to achieve the 
- customized folder structure we showed above. Remember you don't have to follow the same folder pattern that I mentioned here, you can make your own convention.
- The solution I am providing is just a general guideline which you can follow to setup your own solution.
- 
-Ember resolver is as name suggests is responsible for resolving a resource, so simply put, if you ask the resolver to give us a "blog" model, 
-it figures out possible locations where the source file could be and returns it if found or else it will throw an error saying it couldn't find it.</p>
-If you go through ember resolvers' source code you will notice this particular function: </p>
+Remember you don't have to follow the same folder pattern that I have here, you can make your own convention and if you follow the example
+you should be able to code for it.</p> 
+  
+<p>Upon close look into resolvers' source code you will notice this particular function: </p>
   
 <pre>
   //resolver.js file
@@ -121,95 +75,133 @@ If you go through ember resolvers' source code you will notice this particular f
   })
   
 </pre>
+
+Each of these functions in the array returns a path based on "parsedName", which is simply an object that contains details of a 
+ resource being requested such as the type of the resource, the name etc. You can easily override this function
+  and have it return an array that has your own custom function that will return the right path based on your convention. To do so
+  open up resolver.js file which should be located under your /app folder. It should look like:
   
-<p>So if you were to test it out, each of those function in the return list is a method that returns path for a resource. "podBasedModuleName" method
-will return path the resource based on POD structure convention, if the resource exists in that path it simply returns it or else it looks up the path returned by next function and so 
-on and so forth. To override this behavior we will have to edit <b>app/resolver.js</b> file that basically exports the ember resolver. Given below is my custom version : </p>
+  <pre>
+  
+    import Resolver from 'ember-resolver';
 
-<pre>
+    export default Resolver;
 
-import Ember from 'ember';
-import Resolver from 'ember/resolver';
+  </pre>
+  
+Now we are going to override "moduleNameLookupPatterns" method.
+    
+    <pre>
+    
+    import Ember from 'ember';
+    import Resolver from 'ember/resolver';
+    
+    const moduleRoutes = ['route-a', 'route-b'];
+    
+    var resolver = Resolver.extend({
 
-const modules = ['employees', 'training'];//list of module names(route names)
-
-var resolver = Resolver.extend({
-
-    /**
-     * Custom resolver 
-     *
-     * @method 'myCustomResolver'
-     * @param {String} module name
-     * @param {Object} parsed resource name
-     * @return {String} path to resource
-     * */
-    myCustomResolver: function (module, parsedName) {
-        var podPrefix = this.namespace.podModulePrefix || this.namespace.modulePrefix;
-        var podPrefixWithModule = podPrefix + '/' + module;
-        var path = null;
-        var re = new RegExp('^' + module + '(/)?');
-        var reComponentTemplate = new RegExp('^components/' + module);
-        var fullNameWithoutType = parsedName.fullNameWithoutType;
-        var moduleNameMatch = fullNameWithoutType.match(re);
-        var podBasedLookupWithPrefix = function (podPrefix, parsedName) {
-            if (parsedName.type === 'template') {
-                fullNameWithoutType = fullNameWithoutType.replace(/^components\//, '');
-            }
-            return (podPrefix + '/' + fullNameWithoutType.replace(re, '') + '/' + parsedName.type).replace(/\/{2,}/g, '/');
-        };
+       /**
+       * Custom resolver for hybrid approach of organizing(resolving) resources/files.
+       * The method allows for placing resources such as components/routes within your
+       * parent route folder. It supports following folder structure
+       *
+       * app
+       *  |-modules
+       *      |-parent-route
+       *           |-models
+       *               |-model-a
+       *                  |-model.js
+       *                  |-adapter.js
+       *                  |-serializer.js
+       *           |-components
+       *                |-some-component
+       *                      |-component.js
+       *                      |-template.hbs
+       *           |-routes
+       *                |-index
+       *                    |-route.js
+       *                    |-template.hbs
+       *                |-route.js
+       *                |-template.hbs
+       *
+       * @method 'myCustomResolver'
+       * @param {String} route name
+       * @param {Object} parsed resource name
+       * @return {String} path to resource
+       * */
+        myCustomResolver: function (module, parsedName) {
+            let podPrefix = this.namespace.podModulePrefix || this.namespace.modulePrefix;
+            let path = null;
+            let re = new RegExp('^' + module + '(/)?');
+            let fullNameWithoutType = parsedName.fullNameWithoutType;
+            let moduleNameMatch = fullNameWithoutType.match(re);
+            let lookInSubFolder = null;
             
-        //look up the file in our module folder    
-        if (["controller", "route"].indexOf(parsedName.type) !== -1) {
-            path = moduleNameMatch ? podBasedLookupWithPrefix(podPrefixWithModule + '/routes', parsedName) : null;
-        } else if (["component"].indexOf(parsedName.type) !== -1) {
-            path = moduleNameMatch ? podBasedLookupWithPrefix(podPrefixWithModule + '/components', parsedName) : null;
-        } else if (["template"].indexOf(parsedName.type) !== -1) {
-            /**
-             * templates can be for components as well as for routes so use different paths based
-             * on what context the template is being used.
-             * */
-            if (fullNameWithoutType.match(reComponentTemplate)) {
-                path = podBasedLookupWithPrefix(podPrefixWithModule + '/components', parsedName);
-            } else {
-                path = moduleNameMatch ? podBasedLookupWithPrefix(podPrefixWithModule + '/routes', parsedName) : null;
+            switch (parsedName.type) {
+              case "controller":
+              case "route":
+                lookInSubFolder = moduleNameMatch ? "routes" : null;
+                break;
+              case "component":
+                lookInSubFolder = "components";
+                break;
+              case "template":
+                //templates can be for components as well as for routes so use different paths based on what context the template is being used.
+                let isComponentTemplate = fullNameWithoutType.match(/^components\//);
+                fullNameWithoutType = isComponentTemplate ? fullNameWithoutType.replace(/^components\//, '') : fullNameWithoutType;
+                lookInSubFolder = isComponentTemplate ? "components" : "routes";
+                break;
+              case "adapter":
+              case "model":
+              case "serializer":
+                lookInSubFolder = "models";
+                break;
             }
-        } else {
-            path = podPrefixWithModule + '/' + this.pluralize(parsedName.type) + '/' + fullNameWithoutType;
-        }
-
-        return path;
-    },
-
-    moduleNameLookupPatterns: Ember.computed(function () {
-        var defaults = this._super();
-        //defaults.pushObject(this.moduleBasedComponentPattern);
-        modules.forEach((module)=> {
-            let studioModule = module + 'BasedModuleName';
-
-            if (this[studioModule]) {
-                defaults.pushObject(this[studioModule]);
+            
+            if (lookInSubFolder) {
+              path = (podPrefix + '/' + module + '/' + lookInSubFolder + '/' + fullNameWithoutType.replace(re, '') + '/' + parsedName.type).replace(/\/{2,}/g, '/');
             }
-        });
+            return path;
+        },
+  
+        moduleNameLookupPatterns: Ember.computed(function () {
+            let defaults = this._super();
+            
+            modules.forEach((module)=> {
+                let methodName = module + 'BasedModuleName';
+            
+                if (this[methodName]) {
+                    defaults.pushObject(this[methodName]);
+                }
+            });
+            
+            return defaults;
+        })
+    
+    });   
+     
+     /**
+     * Dynamically injects methods based on modules which calls our custom resolver method
+     * */
+    moduleRoutes.forEach(function (module) {
+        let obj = {};
+        let methodName = module + 'BasedModuleName';
+        
+        obj[methodName] = function (parsedName) {
+            return this.myCustomResolver(module, parsedName);
+        };
+        resolver.reopen(obj);
+    });
 
-        return defaults;
-    })
-});
+    export default resolver;
+    
+    </pre>
+</p>
 
-/**
- * Dynamically injects resolver functions based on modules
- * */
-modules.forEach(function (module) {
-    let obj = {};
-    obj[\`$\{module\}BasedModuleName\`] = function (parsedName) {
-        return this.myCustomResolver(module, parsedName);
-    };
-    resolver.reopen(obj);
-});
-
-export default resolver;
-</pre>
-
-<p>The only catch with this resolver is that your components are now namespaced ie. in your template you will invoke component by appending the module name eg: {{employees.list-employee-payroll}}</p>
+<p>On the ending note, I must say I have not tested the performance impact of this resolver because we will be adding more lookups
+per module added to the project. Also as an alternative approach, you might be interested in looking up <a href="https://github.com/dgeb/ember-engines" target="_blank">ember engines</a>,
+which also solves for building modular ember applications.
+</p>
 `
 }];
 
