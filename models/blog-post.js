@@ -63,7 +63,7 @@ you should be able to code for it.</p>
   
 <p>Upon close look into resolvers' source code you will notice this particular function: </p>
   
-<pre>
+<pre class="line-numbers"><code class="language-javascript">
   //resolver.js file
   moduleNameLookupPatterns: Ember.computed(function(){
     return [
@@ -74,25 +74,21 @@ you should be able to code for it.</p>
     ];
   })
   
-</pre>
+</code></pre>
 
 Each of these functions in the array returns a path based on "parsedName", which is simply an object that contains details of a 
  resource being requested such as the type of the resource, the name etc. You can easily override this function
   and have it return an array that has your own custom function that will return the right path based on your convention. To do so
   open up resolver.js file which should be located under your /app folder. It should look like:
   
-  <pre>
-  
+  <pre class="line-numbers"><code class="language-javascript">
     import Resolver from 'ember-resolver';
-
     export default Resolver;
-
-  </pre>
+  </code></pre>
   
 Now we are going to override "moduleNameLookupPatterns" method.
     
-    <pre>
-    
+    <pre class="line-numbers"><code class="language-javascript">    
     import Ember from 'ember';
     import Resolver from 'ember/resolver';
     
@@ -194,8 +190,7 @@ Now we are going to override "moduleNameLookupPatterns" method.
     });
 
     export default resolver;
-    
-    </pre>
+    </code></pre>
 </p>
 
 <p>On the ending note, I must say I have not tested the performance impact of this resolver because we will be adding more lookups
