@@ -210,7 +210,7 @@ exports.normalize = function (post) {
         "id": post.id,
         "attributes": {
             "title": post.title,
-            "createdOn": post.createdOn,
+            "created-on": post.createdOn,
             "abstract": post.abstract
         }, "relationships": {
             "category": {
