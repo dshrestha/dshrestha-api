@@ -1,19 +1,17 @@
-var express = require('express');
-var router = express.Router();
-var svgCaptcha = require('svg-captcha');
+const express = require('express');
+const router = express.Router();
+const svgCaptcha = require('svg-captcha');
 
 router.get('/', function (req, res, next) {
-    var text = svgCaptcha.randomText();
-    var captcha = svgCaptcha({text: text, height: 39});
-    req.session.captcha = text;
-
+    let captcha = svgCaptcha.create();
+    req.session.captcha = captcha.text;
     res.set('Content-Type', 'image/svg+xml');
-    res.status(200).send(captcha);
+    res.status(200).send(captcha.data);
 });
 
 router.get('/verify', function (req, res, next) {
-    var text = req.query.text;
-    var validCaptcha = (text === req.session.captcha);
+    let text = req.query.text;
+    let validCaptcha = (text === req.session.captcha);
     
     req.session.captcha = null;
     res.setHeader('Content-Type', 'application/json');

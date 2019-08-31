@@ -9,14 +9,14 @@
     "body-parser": "~1.15.1",
     "cookie-parser": "~1.4.3",
     "cors": "^2.8.1",
-    "debug": "~2.2.0",
+    "debug": "~2.6.9",
     "express": "~4.13.4",
     "express-session": "^1.14.1",
     "jade": "~1.11.0",
-    "morgan": "~1.7.0",
+    "morgan": "~1.9.1",
     "nodemailer": "^2.6.0",
     "nodemailer-mailgun-transport": "git+https://github.com/orliesaurus/nodemailer-mailgun-transport.git",
     "serve-favicon": "~2.3.0",
-    "svg-captcha": "^1.0.5"
+    "svg-captcha": "^1.4.0"
   }
 }
